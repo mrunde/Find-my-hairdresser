@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<title>Find my haidresser</title>
+	
+	<!--	Metadaten	-->
+	<meta name="viewport" content="initial-scale=1.0, user-scalable=no"/>
+	
+	<!--	Style	-->
+	
+	<link rel="stylesheet" type="text/css" href="style/iOS.css">
+    
+	<!--    Icons    -->
+	<link rel="shortcut icon" type="image/x-icon" href="icons/standard.ico">
+	<link rel="apple-touch-icon" href="icons/iconname.png" >
+	
+		<!--	Skripte	-->
+	<!--	Ein- und Ausklappen von Elementen	-->
+	<script type="text/javascript" src="script/toggling.js"></script>
+	<!--	Parameter auslesen	-->
+	<script type="text/javascript" src="script/getParameters.js"></script>
+	<!--	Formular überprüfen	-->
+	<script type="text/javascript" src="script/checkInput.js"></script>
+	<!--	GoogleMaps API laden	-->
+	<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&key=AIzaSyCJEEneEljGZjVz78i5feMr0MppsHfLuzs"></script>
+	<!--	Marker anzeigen lassen	-->
+	<script type="text/javascript" src="script/showMarkers.js"></script>
+	<!-- 	Locate_me				-->
+	<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=true"></script>
+	<!--	Code für index.html	-->
+	<script type="text/javascript">
+	
+		// var declaration
+		var map;
+		var markers = [];
+		var infoWindow;
+		
+		// Karte darstellen
+		function initialize() {
+			geocoder = new google.maps.Geocoder();
+			
+			var latlng = new google.maps.LatLng(51.962858,7.625577);
+			var mapOptions = {
+				zoom: 12,
+				center: latlng,
+				mapTypeId: google.maps.MapTypeId.ROADMAP,
+				zoomControl: true,
+				zoomControlOptions: {
+					style: google.maps.ZoomControlStyle.SMALL
+				},
+				panControl: false,
+				streetViewControl: false
+			};
+			
+			map = new google.maps.Map(document.getElementById("karte"), mapOptions);
+			
+			infoWindow = new google.maps.InfoWindow();
+			
+			// get markers by xml API v3 compatible
+			downloadUrl("php/gen_xml.php", function(data) {
+			var xml = parseXml(data);
+			markers = xml.documentElement.getElementsByTagName("marker");
+				var bounds = new google.maps.LatLngBounds();
+				
+				for (var i = 0; i < markers.length; i++) {
+					var fr_id = markers[i].getAttribute("fr_id");
+					var fr_name = markers[i].getAttribute("fr_name");
+					var address = markers[i].getAttribute("fr_street") + " " + markers[i].getAttribute("fr_housenr") + ", " + markers[i].getAttribute("fr_pc") + " " + markers[i].getAttribute("fr_town");
+					var fr_web = markers[i].getAttribute("fr_web");
+					var point = new google.maps.LatLng(
+											parseFloat(markers[i].getAttribute("lat")),
+											parseFloat(markers[i].getAttribute("lon"))
+											);
+					createMarker(point, fr_id, fr_name, address, fr_web);
+					bounds.extend(latlng);
+				}
+			}); // end downloadUrl
+		} // end initialize
+	</script>
+	
+	<script>
+        function GetLocation(){
+			var latlng;
+            var ms = new google.maps.LatLng(51.962858,7.625577);
+			
+		
+            if(navigator.geolocation) {
+				browserSupportFlag = true;
+				navigator.geolocation.getCurrentPosition(function(position){ 
+					latlng = new google.maps.LatLng(position.coords.latitude,position.coords.longitude);
+					map.setCenter(latlng);
+					map.setZoom(15);
+					var marker = new google.maps.Marker({
+						position: latlng, 
+						map: map, 
+						title: "Dein Standort"
+					}); 
+				}, function(){
+					handleNoGeolocation(browserSupportFlag);
+				});
+            }
+			else {
+				browserSupportFlag = false;
+				handleNoGeolocation(browserSupportFlag);
+			}
+			
+			
+			
+			
+			
+			function handleNoGeolocation(errorFlag) {
+				if (errorFlag == true) {
+				alert("Geolocation service failed.");
+				latlng = ms;
+			} else {
+				alert("Your browser doesn't support geolocation.");
+				latlng = ms;
+			}
+				map.setCenter(ms);
+			}
+        }
+    </script>
+</head>
+
+<body onload="initialize()">
+	
+	
+<div id="long_header">&#160;</div>
+<div id="central">
+    
+        
+<div id="header">
+	<a href="index.html"><div class="banner_0"><img src="img/banner.png" class="banner"></div>
+    <div class="banner_1">Find my&#160;</div>
+    <div class="banner_2">Hairdresser</div></a>
+    <div class="navi">
+			<input input type="button" value="&#160;" onclick="window.location.href='index.html'" class="navi_home">
+			<input type="button" value="&#160;" onClick="window.location.href='index.html'" class="navi_locate_me" >
+			<input input type="button" value="&#160;" onclick="window.location.href='filter.html'" class="navi_filter">
+			<input input type="button" value="&#160;" onclick="window.location.href='new.html'" class="navi_new_fr">
+			        
+    </div>
+</div>
+
+
+
+    
+<div id="main">
+    
+    <div class="main_content">
+    <form name="form_filter" action="filtered.html" method="get" enctype="text/plain">
+            <h1>
+                 Do you want to find a hairdresser?
+            </h1>
+	            <h2>
+                    <font style="color: #333333; font-size: 13pt; font-weight:bold;">1.</font> Choose your haircut
+                </h2>
+				<h3><input type="radio" name="schnitt" id="f" value="f" onclick="javascript:toggleDisplay('waesche')">&#160;Ladies' haircut</h3><br/>
+				<h3><input type="radio" name="schnitt" id="m" value="m" onclick="javascript:toggleDisplay('waesche')">&#160;Men's haircut</h3><br/>
+				<h3><input type="radio" name="schnitt" id="k" value="k" onclick="javascript:toggleHide('waesche')">&#160;Children haircut</h3>
+			<br/>
+			<div id="waesche" style="display: none">
+				<h2>Do you want to get your hair washed?</h2><input type="checkbox" name="waesche" value="true">&#160;(yes)<br/>
+			</div>
+				<h2>
+					<font style="color: #333333; font-size: 13pt; font-weight:bold;">2.</font> Now enter the maximum price, you are willing to pay
+                </h2>
+				<input class="form_input_price" type="text" id="pr_max" name="pr_max" required pattern="\d+(\,\d{2})?" placeholder="0,00"> &euro;<br/><br/>
+				<h2>
+					<font style="color: #333333; font-size: 13pt; font-weight:bold;">3.</font> Confirm your selection
+				</h2>
+				<input type="submit" value = "Search" name="filter_submit">
+		</form>	    
+	</div>
+        
+    </div>
+   
+     
+    
+</div>     
+    
+    
+    
+<div class="footer"> &#169;&#160;2013&#160;
+        <a href="http://ifgi.uni-muenster.de/" target="_blank">ifgi</a>
+        &#160;&#160;&#183;&#160;&#160;<a href="impressum.html">Imprint</a>
+		&#160;&#160;&#183;&#160;&#160;<a href="#header">to the top &#8593;</a>
+</div>
+
+</body>
+</html>

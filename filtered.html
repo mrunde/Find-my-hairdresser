@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<title>Find my haidresser</title>
+	
+	<!--	Metadaten	-->
+	<meta name="viewport" content="initial-scale=1.0, user-scalable=no"/>
+	
+	<!--	Style	-->
+	
+	<link rel="stylesheet" type="text/css" href="style/iOS.css" media="only screen and (max-width:480px)">
+	<link rel="stylesheet" type="text/css" href="style/standard.css" media="screen and (min-width:481px)">
+    
+	<!--    Icons    -->
+	<link rel="shortcut icon" type="image/x-icon" href="icons/standard.ico">
+	<link rel="apple-touch-icon" href="icons/iconname.png" >	
+	
+		<!--	Skripte	-->
+	<!--	Ein- und Ausklappen von Elementen	-->
+	<script type="text/javascript" src="script/toggling.js"></script>
+	<!--	Parameter auslesen	-->
+	<script type="text/javascript" src="script/getParameters.js"></script>
+	<!--	Formular überprüfen	-->
+	<script type="text/javascript" src="script/checkInput.js"></script>
+	<!--	GoogleMaps API laden	-->
+	<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&key=AIzaSyCJEEneEljGZjVz78i5feMr0MppsHfLuzs"></script>
+	<!--	Marker anzeigen lassen	-->
+	<script type="text/javascript" src="script/showMarkers.js"></script>
+	<!-- 	Locate_me				-->
+	<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=true"></script>
+	<!--	Code für index.html	-->
+	<script type="text/javascript">
+	
+		// var declaration
+		var map;
+		var markers = [];
+		var infoWindow;
+		
+		// Karte darstellen
+		function initialize() {
+			geocoder = new google.maps.Geocoder();
+			
+			var latlng = new google.maps.LatLng(51.962858,7.625577);
+			var mapOptions = {
+				zoom: 12,
+				center: latlng,
+				mapTypeId: google.maps.MapTypeId.ROADMAP,
+				zoomControl: true,
+				zoomControlOptions: {
+					style: google.maps.ZoomControlStyle.SMALL
+				},
+				panControl: false,
+				streetViewControl: false
+			};
+			
+			map = new google.maps.Map(document.getElementById("karte"), mapOptions);
+			
+			infoWindow = new google.maps.InfoWindow();
+			
+			filter_selected();
+		} // end initialize
+		
+		// edited by Lars - function to filter data
+		function filter_selected(){
+			// stakeholder like selected radiobutton
+			var stakeholder;
+			if(getParam("schnitt") == "f") {
+				if(getParam("waesche") == true){
+					stakeholder = "pr_f2";
+				}
+				else {
+					stakeholder = "pr_f1";
+				}
+			}
+			else if (getParam("schnitt") == "m"){
+				if (getParam("waesche") == true){
+					stakeholder = "pr_m2";
+				}
+				else {
+					stakeholder = "pr_m1";
+				}
+			}
+			else if (getParam("schnitt") == "k"){
+					stakeholder = "pr_k";
+			}
+				
+			// max_price like entered maximal price
+			var max_price = parseFloat(getParam("pr_max"));
+			var results_count = 0;
+			
+			// filter and create marker where filter matches 
+			downloadUrl("php/gen_xml.php", function(data) {
+			var xml = parseXml(data);
+			markers = xml.documentElement.getElementsByTagName("marker");
+			var bounds = new google.maps.LatLngBounds();
+			
+				for (var i = 0; i < markers.length; i++) {
+					if (parseFloat(markers[i].getAttribute(stakeholder)) <= max_price) {
+						results_count = results_count +1;
+						var fr_id = markers[i].getAttribute("fr_id");
+						var fr_name = markers[i].getAttribute("fr_name");
+						var address = markers[i].getAttribute("fr_street") + " " + markers[i].getAttribute("fr_housenr") + ", " + markers[i].getAttribute("fr_pc") + " " + markers[i].getAttribute("fr_town");
+						var fr_web = markers[i].getAttribute("fr_web");
+						var point = new google.maps.LatLng(
+												parseFloat(markers[i].getAttribute("lat")),
+												parseFloat(markers[i].getAttribute("lon"))
+												);
+						createMarker(point, fr_id, fr_name, address, fr_web);
+					}
+				}
+				
+				// in case there are no results: show message
+				if (results_count == 0){
+					alert("We couldn't find any hairdressers that matched to your criterias :-(");
+				} else {
+					alert("We found " + results_count + " hairdressers that matched to your criterias :-)");
+				}
+			}); // end downloadUrl
+		} // end filter_selected
+	</script>
+	
+	<script>
+        function GetLocation(){
+			var latlng;
+            var ms = new google.maps.LatLng(51.962858,7.625577);
+			
+		
+            if(navigator.geolocation) {
+				browserSupportFlag = true;
+				navigator.geolocation.getCurrentPosition(function(position){ 
+					latlng = new google.maps.LatLng(position.coords.latitude,position.coords.longitude);
+					map.setCenter(latlng);
+					map.setZoom(15);
+					var marker = new google.maps.Marker({
+						position: latlng, 
+						map: map, 
+						title: "Dein Standort"
+					}); 
+				}, function(){
+					handleNoGeolocation(browserSupportFlag);
+				});
+            }
+			else {
+				browserSupportFlag = false;
+				handleNoGeolocation(browserSupportFlag);
+			}
+			
+			
+			
+			
+			
+			function handleNoGeolocation(errorFlag) {
+				if (errorFlag == true) {
+				alert("Geolocation service failed.");
+				latlng = ms;
+			} else {
+				alert("Your browser doesn't support geolocation.");
+				latlng = ms;
+			}
+				map.setCenter(ms);
+			}
+        }
+    </script>
+</head>
+
+<body onload="initialize()">
+	
+	
+<div id="long_header">&#160;</div>
+<div id="central">
+    
+        
+<div id="header">
+	<a href="index.html"><div class="banner_0"><img src="img/banner.png" class="banner"></div>
+    <div class="banner_1">Find my&#160;</div>
+    <div class="banner_2">Hairdresser</div></a>
+    <div class="navi">
+			<!-- <span><div id="infofeld">blub<img src="arrow3.png" class="arrow"></div></span> -->
+            <input input type="button" value="&#160;" onclick="window.location.href='index.html'" class="navi_home">
+			<input type="submit" value="&#160;" onClick="GetLocation()" class="navi_locate_me">
+			<input input type="button" value="&#160;" onclick="window.location.href='new.html'" class="navi_new_fr">
+			        
+    </div>
+</div>
+
+
+    
+<div id="main">
+    
+    <div class="main_content">
+        <div id="karte" style="height: 640px; width: 640px; border: 1px #cccccc solid;"></div> 
+        <div id="detail">
+		<script type="text/javascript">
+			if (getParam("id") != "") {
+				// get markers by xml
+				downloadUrl("php/gen_xml.php", function(data) {
+					var xml = parseXml(data);
+					markers = xml.documentElement.getElementsByTagName("marker");
+					
+					for (var i = 0; i < markers.length; i++) {
+						var fr_id = markers[i].getAttribute("fr_id");
+						if (fr_id == getParam("id")) {
+							// Name
+							var fr_name = markers[i].getAttribute("fr_name");
+							document.writeln("<h1>" + fr_name + "<\/h1>");
+							
+							// Adresse
+							var address = markers[i].getAttribute("fr_street") + " " + markers[i].getAttribute("fr_housenr") + "<br\/>" + markers[i].getAttribute("fr_pc") + " " + markers[i].getAttribute("fr_town");
+							document.writeln("<b>Adresse:<\/b><br\/>" + address + "<br\/>");
+							
+							// Homepage
+							var fr_web = markers[i].getAttribute("fr_web");
+							if (fr_web != "") {
+								document.writeln("Homepage: <a href=\"" + fr_web + "\">" + fr_web + "<\/a><br\/>");
+							}
+							
+							// Kontakt
+							var fr_email = markers[i].getAttribute("fr_email");
+							if (fr_email.length > "") {
+								document.writeln("E-Mail: <a href=\"mailto:" + fr_email + "\">" + fr_email + "<\/a><br\/>");
+							}
+							var fr_tel_1 = markers[i].getAttribute("fr_tel_1");
+							if (fr_tel_1.length > 0) {
+								document.writeln("Telefon: <a href=\"tel:" + fr_tel_1 + "\">" + fr_tel_1 + "<\/a><br\/>");
+							}
+							var fr_tel_2 = markers[i].getAttribute("fr_tel_2");
+							if (fr_tel_2.length > 0) {
+								document.writeln("Telefon 2: <a href=\"tel:" + fr_tel_2 + "\">" + fr_tel_2 + "<\/a><br\/>");
+							}
+							var fr_tel_m = markers[i].getAttribute("fr_tel_m");
+							if (fr_tel_m.length > 0) {
+								document.writeln("Mobil: <a href=\"tel:" + fr_tel_m + "\">" + fr_tel_m + "<\/a><br\/>");
+							}
+							var fr_tel_f = markers[i].getAttribute("fr_tel_f");
+							if (fr_tel_f.length > 0) {
+								document.writeln("Fax: <a href=\"tel:" + fr_tel_f + "\">" + fr_tel_f + "<\/a><br\/>");
+							}
+							
+							// Weitere Informationen
+							var fr_info = markers[i].getAttribute("fr_info");
+							if (fr_info.length > 0) {
+								document.write("Weitere Informationen:<br\/>" + fr_info + "<br\/>");
+							}
+							
+							// Terminabsprache
+							var fr_termin = markers[i].getAttribute("fr_termin");
+							if (fr_termin == "t") {
+								document.write("Eine Terminabsprache ist möglich.<br\/>");
+							} else {
+								document.write("Eine Terminabsprache ist nicht nötig.<br\/>");
+							}
+							
+							// Öffnungszeiten
+							document.write("<b>Öffnungszeiten<\/b><br\/>");
+							// Montag
+							var mon_o1 = markers[i].getAttribute("mon_o1");
+							if (mon_o1.length > 0) {
+								var mon_c1 = markers[i].getAttribute("mon_c1");
+								var mon_o2 = markers[i].getAttribute("mon_o2");
+								if (mon_o2.length > 0) {
+									var mon_c2 = markers[i].getAttribute("mon_c2");
+									document.write("Montags von " + mon_o1 + " bis " + mon_c1 + " Uhr und von " + mon_o2 + " bis " + mon_c2 + " Uhr.<br\/>");
+								} else {
+									document.write("Montags von " + mon_o1 + " bis " + mon_c1 + " Uhr.<br\/>");
+								}
+							}
+							// Dienstag
+							var tue_o1 = markers[i].getAttribute("tue_o1");
+							if (tue_o1.length > 0) {
+								var tue_c1 = markers[i].getAttribute("tue_c1");
+								var tue_o2 = markers[i].getAttribute("tue_o2");
+								if (tue_o2.length > 0) {
+									var tue_c2 = markers[i].getAttribute("tue_c2");
+									document.write("Dienstags von " + tue_o1 + " bis " + tue_c1 + " Uhr und von " + tue_o2 + " bis " + tue_c2 + " Uhr.<br\/>");
+								} else {
+									document.write("Dienstags von " + tue_o1 + " bis " + tue_c1 + " Uhr.<br\/>");
+								}
+							}
+							// Mittwoch
+							var wed_o1 = markers[i].getAttribute("wed_o1");
+							if (wed_o1.length > 0) {
+								var wed_c1 = markers[i].getAttribute("wed_c1");
+								var wed_o2 = markers[i].getAttribute("wed_o2");
+								if (wed_o2.length > 0) {
+									var wed_c2 = markers[i].getAttribute("wed_c2");
+									document.write("Mittwochs von " + wed_o1 + " bis " + wed_c1 + " Uhr und von " + wed_o2 + " bis " + wed_c2 + " Uhr.<br\/>");
+								} else {
+									document.write("Mittwochs von " + wed_o1 + " bis " + wed_c1 + " Uhr.<br\/>");
+								}
+							}
+							// Donnerstag
+							var thu_o1 = markers[i].getAttribute("thu_o1");
+							if (thu_o1.length > 0) {
+								var thu_c1 = markers[i].getAttribute("thu_c1");
+								var thu_o2 = markers[i].getAttribute("thu_o2");
+								if (thu_o2.length > 0) {
+									var thu_c2 = markers[i].getAttribute("thu_c2");
+									document.write("Donnerstags von " + thu_o1 + " bis " + thu_c1 + " Uhr und von " + thu_o2 + " bis " + thu_c2 + " Uhr.<br\/>");
+								} else {
+									document.write("Donnerstags von " + thu_o1 + " bis " + thu_c1 + " Uhr.<br\/>");
+								}
+							}
+							// Freitag
+							var fri_o1 = markers[i].getAttribute("fri_o1");
+							if (fri_o1.length > 0) {
+								var fri_c1 = markers[i].getAttribute("fri_c1");
+								var fri_o2 = markers[i].getAttribute("fri_o2");
+								if (fri_o2.length > 0) {
+									var fri_c2 = markers[i].getAttribute("fri_c2");
+									document.write("Freitags von " + fri_o1 + " bis " + fri_c1 + " Uhr und von " + fri_o2 + " bis " + fri_c2 + " Uhr.<br\/>");
+								} else {
+									document.write("Freitags von " + fri_o1 + " bis " + fri_c1 + " Uhr.<br\/>");
+								}
+							}
+							// Samstag
+							var sat_o1 = markers[i].getAttribute("sat_o1");
+							if (sat_o1.length > 0) {
+								var sat_c1 = markers[i].getAttribute("sat_c1");
+								var sat_o2 = markers[i].getAttribute("sat_o2");
+								if (sat_o2.length > 0) {
+									var sat_c2 = markers[i].getAttribute("sat_c2");
+									document.write("Samstags von " + sat_o1 + " bis " + sat_c1 + " Uhr und von " + sat_o2 + " bis " + sat_c2 + " Uhr.<br\/>");
+								} else {
+									document.write("Samstags von " + sat_o1 + " bis " + sat_c1 + " Uhr.<br\/>");
+								}
+							}
+							// Sonntag
+							var sun_o1 = markers[i].getAttribute("sun_o1");
+							if (sun_o1.length > 0) {
+								var sun_c1 = markers[i].getAttribute("sun_c1");
+								var sun_o2 = markers[i].getAttribute("sun_o2");
+								if (sun_o2.length > 0) {
+									var sun_c2 = markers[i].getAttribute("sun_c2");
+									document.write("Sonntags von " + sun_o1 + " bis " + sun_c1 + " Uhr und von " + sun_o2 + " bis " + sun_c2 + " Uhr.<br\/>");
+								} else {
+									document.write("Sonntags von " + sun_o1 + " bis " + sun_c1 + " Uhr.<br\/>");
+								}
+							}
+							
+							// Preise
+							document.write("<b>Preise<\/b><br\/>");
+							var pr_m1 = markers[i].getAttribute("pr_m1");
+							var pr_m2 = markers[i].getAttribute("pr_m2");
+							var pr_f1 = markers[i].getAttribute("pr_f1");
+							var pr_f2 = markers[i].getAttribute("pr_f2");
+							var pr_k = markers[i].getAttribute("pr_k");
+							document.write("Herrenhaarschnitt (OHNE Wäsche): " + pr_m1 + "<br\/>");
+							document.write("Herrenhaarschnitt (MIT Wäsche): " + pr_m2 + "<br\/>");
+							document.write("Damenaarschnitt (OHNE Wäsche): " + pr_f1 + "<br\/>");
+							document.write("Damenhaarschnitt (MIT Wäsche): " + pr_f2 + "<br\/>");
+							document.write("Kinderhaarschnitt: " + pr_k + "<br\/>");
+							
+							break;
+						}
+					}
+				}); // end downloadUrl
+			}
+		</script>
+	</div>
+        
+    </div>
+    
+    <div id="filter_main">
+        <div class="filter_box">
+		<form name="form_filter" action="filtered.html" method="get" enctype="text/plain">
+            <h1>
+                Do you want to find a hairdresser?
+            </h1>
+	            <h2>
+                    <font style="color: #333333; font-size: 13pt; font-weight:bold;">1.</font> Choose your haircut
+                </h2>
+				<h3><input type="radio" name="schnitt" id="f" value="f" onclick="javascript:toggleDisplay('waesche')">&#160;Ladies' haircut</h3><br/>
+				<h3><input type="radio" name="schnitt" id="m" value="m" onclick="javascript:toggleDisplay('waesche')">&#160;Men's haircut</h3><br/>
+				<h3><input type="radio" name="schnitt" id="k" value="k" onclick="javascript:toggleHide('waesche')">&#160;Children haircut</h3>
+			<br/>
+			<div id="waesche" style="display: none">
+				<h2>Do you want to get your hair washed?</h2><input type="checkbox" name="waesche" value="true">&#160;(yes)<br/>
+			</div>
+				<h2>
+					<font style="color: #333333; font-size: 13pt; font-weight:bold;">2.</font> Now enter the maximum price, you are willing to pay
+                </h2>
+				<input class="form_input_price" type="text" id="pr_max" name="pr_max" required pattern="\d+(\,\d{2})?" placeholder="0,00"> &euro;<br/><br/>
+				<h2>
+					<font style="color: #333333; font-size: 13pt; font-weight:bold;">3.</font> Confirm your selection
+				</h2>
+				<input type="submit" value = "Suchen" name="filter_submit">
+		</form>		
+        </div>    
+		
+				</form>		
+        
+		
+		<div class="filter_box">
+		    <h1>
+                Do you want to get more information about a hairdresser?
+            </h1>
+	            <h3>
+                    Click at the hairdresser in the map and choose "more information" to get the opening times, prices and further information displayed.
+                </h3>
+				
+        </div>    		
+		</div>
+	</div>
+        
+    <div id="main_end">
+        &#160;   
+    </div>
+    
+     
+    
+</div>     
+    
+    
+    
+    
+    
+    
+<div id="mobile_intro">
+    <h3>
+        &#160;&#160;ENTERING WITH A MOBILE DEVICE:&#160;&#160;
+    </h3>
+</div>
+<div id="mobile_choose">
+<ul>
+    <li><a href="mobile/index.html">to the mobile version &#8250;</a></li>
+</ul>
+</div>   
+
+	
+       
+</div>    
+    
+    
+    
+ 
+
+<div id="long_footer_top">&#160;</div>
+    
+
+    
+<div id="long_footer_bottom">&#160;</div>
+    
+<div class="footer">
+    <div class="footer_left">
+        &#169;&#160;2013&#160;
+        <a href="http://ifgi.uni-muenster.de/" target="_blank">ifgi</a>
+        &#160;&#160;&#183;&#160;&#160;<a href="impressum.html">Imprint</a>
+        <!--&#160;&#160;&#183;&#160;&#160;<a href="kontakt.html">Kontakt</a> -->
+        <!--&#160;&#160;&#183;&#160;&#160;<a href="hilfe.html">Hilfe</a> -->
+    </div>    
+    <div class="footer_right">
+        <!-- Sprache&#160;&#160;<a href="">deutsch</a>&#160;-&#160;<a href="">englisch</a> -->
+        <!-- &#160;&#160;&#183;&#160;&#160;<a href="">zur mobilen Ansicht wechseln</a> 
+        &#160;&#160;&#183;&#160;&#160;--><a href="#header">to the top &#8593;</a>
+    </div>
+    
+</div>
+    
+<div id="footer_mobile_intro">
+    &#169;&#160;2013&#160;
+    <a href="http://ifgi.uni-muenster.de/" target="_blank">ifgi</a>
+    &#160;&#160;&#183;&#160;&#160;Imprint
+    &#160;&#160;&#183;&#160;&#160;Contact
+    &#160;&#160;&#183;&#160;&#160;Help
+</div>
+</body>
+</html>

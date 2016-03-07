@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+		
+	<!--	Skripte	-->
+	<!--	Marker anzeigen lassen	-->
+	<script type="text/javascript" src="script/showMarkers.js"></script>
+	<!--	Parameter auslesen	-->
+	<script type="text/javascript" src="script/getParameters.js"></script>
+	<!--	Code für detail.html	-->
+	<script type="text/javascript">
+	
+		// var declaration
+		var markers = [];
+	</script>
+</head>
+
+<body>
+	<script type="text/javascript">
+		// get markers by xml
+		downloadUrl("php/gen_xml.php", function(data) {
+			var xml = parseXml(data);
+			markers = xml.documentElement.getElementsByTagName("marker");
+			
+			for (var i = 0; i < markers.length; i++) {
+				var fr_id = markers[i].getAttribute("fr_id");
+				if (fr_id == getParam("id")) {
+					// Name
+					var fr_name = markers[i].getAttribute("fr_name");
+					document.writeln("<html><head>");
+					document.writeln("<title>Find my hairdresser</title>");
+					document.writeln("<link rel=\"stylesheet\" type=\"text/css\" href=\"style/standard.css\" media=\"screen and (min-width:481px)\">");
+					document.writeln("<link rel=\"stylesheet\" type=\"text/css\" href=\"style/standard.css\" media=\"screen and (min-width:481px)\">");
+					document.writeln("</head>");
+					document.writeln("<body>");
+					document.writeln("<div id=\"long_header\">&#160;</div>");
+					document.writeln("<div id=\"central\">");
+					document.writeln("<div id=\"header\">");
+					document.writeln("<a href=\"index.html\"><div class=\"banner_0\"><img src=\"img/banner.png\" class=\"banner\"></div>");
+					document.writeln("<div class=\"banner_1\">Find my&#160;</div>");
+					document.writeln("<div class=\"banner_2\">Hairdresser</div></a>");
+					document.writeln("<div class=\"navi\">");
+					document.writeln("<input input type=\"button\" value=\"&#160;\" onclick=\"window.location.href='index.html'\" class=\"navi_home\">");
+					document.writeln("<input type=\"button\" value=\"&#160;\" onClick=\"window.location.href='index.html'\" class=\"navi_locate_me\">");
+					document.writeln("<input input type=\"button\" value=\"&#160;\" onclick=\"window.location.href='new.html'\" class=\"navi_new_fr\">");
+					document.writeln("</div>"); //div Navi
+					document.writeln("</div>"); //div Header
+					
+					document.writeln("<div id=\"main\">");
+					document.writeln("<div class=\"detail\">");
+					
+					
+					document.write("<div class=\"detail_content\">");
+					document.writeln("<h5>" + fr_name + "</h5>");
+					
+					// Adresse
+					var address = markers[i].getAttribute("fr_street") + " " + markers[i].getAttribute("fr_housenr") + "<br\/>" + markers[i].getAttribute("fr_pc") + " " + markers[i].getAttribute("fr_town");
+					document.writeln("<b>Address</b><br/>" + address + "<br/>");
+					
+					// Homepage
+					var fr_web = markers[i].getAttribute("fr_web");
+					if (fr_web != "") {
+						document.writeln("Homepage: <a href=\"" + fr_web + "\">" + fr_web + "<\/a><br\/>");
+					}
+					
+					// Kontakt
+					var fr_email = markers[i].getAttribute("fr_email");
+					if (fr_email.length > "") {
+						document.writeln("E-Mail: <a href=\"mailto:" + fr_email + "\">" + fr_email + "<\/a><br\/>");
+					}
+					var fr_tel_1 = markers[i].getAttribute("fr_tel_1");
+					if (fr_tel_1.length > 0) {
+						document.writeln("Telephonenumber: <a href=\"tel:" + fr_tel_1 + "\">" + fr_tel_1 + "<\/a><br\/>");
+					}
+					var fr_tel_2 = markers[i].getAttribute("fr_tel_2");
+					if (fr_tel_2.length > 0) {
+						document.writeln("2. Telephonenumber: <a href=\"tel:" + fr_tel_2 + "\">" + fr_tel_2 + "<\/a><br\/>");
+					}
+					var fr_tel_m = markers[i].getAttribute("fr_tel_m");
+					if (fr_tel_m.length > 0) {
+						document.writeln("Mobilenumber: <a href=\"tel:" + fr_tel_m + "\">" + fr_tel_m + "<\/a><br\/>");
+					}
+					var fr_tel_f = markers[i].getAttribute("fr_tel_f");
+					if (fr_tel_f.length > 0) {
+						document.writeln("Faxnumber: <a href=\"tel:" + fr_tel_f + "\">" + fr_tel_f + "<\/a><br\/>");
+					}
+					document.writeln("</div>"); // div detail_content
+						
+
+						
+					// Öffnungszeiten
+					document.write("<br\><br\><div class=\"detail_line\">&#160;</div><div class=\"detail_content\">");
+					document.write("<b>Opening times<\/b><br\/>");
+					document.write("<table border=\"0px\">");
+					// Montag
+					var mon_o1 = markers[i].getAttribute("mon_o1");
+					if (mon_o1.length > 0) {
+						var mon_c1 = markers[i].getAttribute("mon_c1");
+						var mon_o2 = markers[i].getAttribute("mon_o2");
+						if (mon_o2.length > 0) {
+							var mon_c2 = markers[i].getAttribute("mon_c2");
+							document.write("<tr><td>Monday</td><td></td><td>" + mon_o1 + "</td><td> to </td><td>" + mon_c1 + "</td><td> and </td><td>" + mon_o2 + "</td><td> to </td><td>" + mon_c2 + "</td><td> </td></tr>");
+						} else {
+							document.write("<tr><td>Monday</td><td></td><td>" + mon_o1 + "</td><td> to </td><td>" + mon_c1 + "</td><td> </td></tr>");
+						}
+					}
+					
+										
+					// Dienstag
+					var tue_o1 = markers[i].getAttribute("tue_o1");
+					if (tue_o1.length > 0) {
+						var tue_c1 = markers[i].getAttribute("tue_c1");
+						var tue_o2 = markers[i].getAttribute("tue_o2");
+						if (tue_o2.length > 0) {
+							var mon_c2 = markers[i].getAttribute("tue_c2");
+							document.write("<tr><td>Tuesday</td><td></td><td>" + tue_o1 + "</td><td> to </td><td>" + tue_c1 + "</td><td> and </td><td>" + tue_o2 + "</td><td> to </td><td>" + tue_c2 + "</td><td> </td></tr>");
+						} else {
+							document.write("<tr><td>Tuesday</td><td></td><td>" + tue_o1 + "</td><td> to </td><td>" + tue_c1 + "</td><td> </td></tr>");
+						}
+					}
+					
+									
+					// Mittwoch
+					var wed_o1 = markers[i].getAttribute("wed_o1");
+					if (wed_o1.length > 0) {
+						var wed_c1 = markers[i].getAttribute("wed_c1");
+						var wed_o2 = markers[i].getAttribute("wed_o2");
+						if (wed_o2.length > 0) {
+							var wed_c2 = markers[i].getAttribute("wed_c2");
+							document.write("<tr><td>Wensday</td><td></td><td>" + wed_o1 + "</td><td> to </td><td>" + wed_c1 + "</td><td> and </td><td>" + wed_o2 + "</td><td> to </td><td>" + wed_c2 + "</td><td> </td></tr>");
+						} else {
+							document.write("<tr><td>Wensday</td><td></td><td>" + wed_o1 + "</td><td> to </td><td>" + wed_c1 + "</td><td> </td></tr>");
+						}
+					}
+					
+					// Donnerstag
+					var thu_o1 = markers[i].getAttribute("thu_o1");
+					if (thu_o1.length > 0) {
+						var thu_c1 = markers[i].getAttribute("thu_c1");
+						var thu_o2 = markers[i].getAttribute("thu_o2");
+						if (thu_o2.length > 0) {
+							var thu_c2 = markers[i].getAttribute("thu_c2");
+							document.write("<tr><td>Thursday</td><td></td><td>" + thu_o1 + "</td><td> to </td><td>" + thu_c1 + "</td><td> and </td><td>" + thu_o2 + "</td><td> to </td><td>" + thu_c2 + "</td><td> </td></tr>");
+						} else {
+							document.write("<tr><td>Thursday</td><td></td><td>" + thu_o1 + "</td><td> to </td><td>" + thu_c1 + "</td><td> </td></tr>");
+						}
+					}
+					
+					// Freitag
+					var fri_o1 = markers[i].getAttribute("fri_o1");
+					if (fri_o1.length > 0) {
+						var fri_c1 = markers[i].getAttribute("fri_c1");
+						var fri_o2 = markers[i].getAttribute("fri_o2");
+						if (fri_o2.length > 0) {
+							var fri_c2 = markers[i].getAttribute("fri_c2");
+							document.write("<tr><td>Friday</td><td></td><td>" + fri_o1 + "</td><td> to </td><td>" + fri_c1 + "</td><td> and </td><td>" + fri_o2 + "</td><td> to </td><td>" + fri_c2 + "</td><td> </td></tr>");
+						} else {
+							document.write("<tr><td>Friday</td><td></td><td>" + fri_o1 + "</td><td> to </td><td>" + fri_c1 + "</td><td> </td></tr>");
+						}
+					}
+					
+					// Samstag
+					var sat_o1 = markers[i].getAttribute("sat_o1");
+					if (sat_o1.length > 0) {
+						var sat_c1 = markers[i].getAttribute("sat_c1");
+						var sat_o2 = markers[i].getAttribute("sat_o2");
+						if (sat_o2.length > 0) {
+							var sat_c2 = markers[i].getAttribute("sat_c2");
+							document.write("<tr><td>Saturday</td><td></td><td>" + sat_o1 + "</td><td> to </td><td>" + sat_c1 + "</td><td> and </td><td>" + sat_o2 + "</td><td> to </td><td>" + sat_c2 + "</td><td> </td></tr>");
+						} else {
+							document.write("<tr><td>Saturday</td><td></td><td>" + sat_o1 + "</td><td> to </td><td>" + sat_c1 + "</td><td> </td></tr>");
+						}
+					}
+					
+					// Sonntag
+					var sun_o1 = markers[i].getAttribute("sun_o1");
+					if (sun_o1.length > 0) {
+						var sun_c1 = markers[i].getAttribute("sun_c1");
+						var sun_o2 = markers[i].getAttribute("sun_o2");
+						if (sun_o2.length > 0) {
+							var sun_c2 = markers[i].getAttribute("sun_c2");
+							document.write("<tr><td>Sunday</td><td></td><td>" + sun_o1 + "</td><td> to </td><td>" + sun_c1 + "</td><td> and </td><td>" + sun_o2 + "</td><td> to </td><td>" + sun_c2 + "</td><td> </td></tr>");
+						} else {
+							document.write("<tr><td>Sunday</td><td></td><td>" + sun_o1 + "</td><td> to </td><td>" + sun_c1 + "</td><td> </td></tr>");
+						}
+					}
+					
+					
+					document.write("</table>");
+					
+					// Terminabsprache
+					var fr_termin = markers[i].getAttribute("fr_termin");
+					if (fr_termin == "t") {
+						document.write("<br/><font style=\"color: #E8911E;\">You need an appointment.</font><br\/>");
+					} else {
+						document.write("<br/>You don't need an appointment.<br\/>");
+					}
+					document.writeln("</div>"); // div detail_content
+					
+					// Preise
+					document.write("<br\><br\><div class=\"detail_line\">&#160;</div><div class=\"detail_content\">");
+					document.write("<b>Prices <\/b>(in &#8364;)<br\/>");
+					var pr_m1 = markers[i].getAttribute("pr_m1");
+					var pr_m2 = markers[i].getAttribute("pr_m2");
+					var pr_f1 = markers[i].getAttribute("pr_f1");
+					var pr_f2 = markers[i].getAttribute("pr_f2");
+					var pr_k = markers[i].getAttribute("pr_k");
+					
+					document.write("<table border=\"0px\">");
+					document.write("<tr><td>Men's cut</td><td>(without washing):</td><td>" + pr_m1 + "</td></tr>");
+					document.write("<tr><td>Men's haircut</td><td>(incl. washing):</td><td>" + pr_m2 + "</td></tr>");
+					document.write("<tr><td>Ladies' haircut</td><td>(without washing):</td><td>" + pr_f1 + "</td></tr>");
+					document.write("<tr><td>Ladies' haircut</td><td>(incl. washing):</td><td>" + pr_f2 + "</td></tr>");
+					document.write("<tr><td>Children haircut:</td><td></td><td>" + pr_k + "</td></tr>");
+					document.write("</table><br\/>");
+					
+					document.writeln("</div>"); // div detail_content
+					
+					
+					// Weitere Informationen
+					
+					var fr_info = markers[i].getAttribute("fr_info");
+					if (fr_info.length > 0) {
+						document.write("<br\><br\><div class=\"detail_line\">&#160;</div><div class=\"detail_content\">");
+						document.write("<b>more informations</b><br\/>" + fr_info + "<br\/>");
+					}
+					document.writeln("</div>"); // div detail_content
+					
+					
+					
+					document.writeln("</div>"); // div detail
+					document.writeln("</div>"); // div main
+					
+					document.writeln("<div id=\"main_end\">&#160;</div>");
+					
+					
+					document.writeln("</div>"); //div central
+					
+					document.writeln("<div id=\"long_footer_top\">&#160;</div>"); 
+					document.writeln("<div id=\"long_footer_bottom\">&#160;</div>");
+					document.writeln("<div class=\"footer\">");    
+					document.writeln("<div class=\"footer_left\">&#169;&#160;2013&#160;<a href=\"http://ifgi.uni-muenster.de/\" target=\"_blank\">ifgi</a>"); 
+					document.writeln("&#160;&#160;&#183;&#160;&#160;<a href=\"impressum.html\">Imprint</a></div>");
+					
+					document.writeln("<div class=\"footer_right\"><a href=\"#header\">to the top &#8593;</a></div>");
+					document.writeln("</div>"); // div footer
+					
+										
+					document.writeln("</body>");
+					document.writeln("</html>");
+					
+					break;
+				}
+			}
+		}); // end downloadUrl
+	</script>
+</body>
+</html>
