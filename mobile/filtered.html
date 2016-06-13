@@ -20,7 +20,7 @@
 	<script type="text/javascript" src="script/toggling.js"></script>
 	<!--	Parameter auslesen	-->
 	<script type="text/javascript" src="script/getParameters.js"></script>
-	<!--	Formular überprüfen	-->
+	<!--	Formular ï¿½berprï¿½fen	-->
 	<script type="text/javascript" src="script/checkInput.js"></script>
 	<!--	GoogleMaps API laden	-->
 	<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&key=AIzaSyCJEEneEljGZjVz78i5feMr0MppsHfLuzs"></script>
@@ -28,7 +28,7 @@
 	<script type="text/javascript" src="script/showMarkers.js"></script>
 	<!-- 	Locate_me				-->
 	<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=true"></script>
-	<!--	Code für index.html	-->
+	<!--	Code fï¿½r index.html	-->
 	<script type="text/javascript">
 	
 		// var declaration
@@ -111,9 +111,9 @@
 				
 				// in case there are no results: show message
 				if (results_count == 0){
-					alert("We couldn't find any hairdressers that matched to your criterias :-(");
+					alert("We couldn't find any hairdressers that matched to your criteria :-(");
 				} else {
-					alert("We found " + results_count + " hairdressers that matched to your criterias :-)");
+					alert("We found " + results_count + " hairdressers that matched to your criteria :-)");
 				}
 			}); // end downloadUrl
 		} // end filter_selected
@@ -246,13 +246,13 @@
 							// Terminabsprache
 							var fr_termin = markers[i].getAttribute("fr_termin");
 							if (fr_termin == "t") {
-								document.write("Eine Terminabsprache ist möglich.<br\/>");
+								document.write("Eine Terminabsprache ist mï¿½glich.<br\/>");
 							} else {
-								document.write("Eine Terminabsprache ist nicht nötig.<br\/>");
+								document.write("Eine Terminabsprache ist nicht nï¿½tig.<br\/>");
 							}
 							
-							// Öffnungszeiten
-							document.write("<b>Öffnungszeiten<\/b><br\/>");
+							// ï¿½ffnungszeiten
+							document.write("<b>ï¿½ffnungszeiten<\/b><br\/>");
 							// Montag
 							var mon_o1 = markers[i].getAttribute("mon_o1");
 							if (mon_o1.length > 0) {
@@ -345,10 +345,10 @@
 							var pr_f1 = markers[i].getAttribute("pr_f1");
 							var pr_f2 = markers[i].getAttribute("pr_f2");
 							var pr_k = markers[i].getAttribute("pr_k");
-							document.write("Herrenhaarschnitt (OHNE Wäsche): " + pr_m1 + "<br\/>");
-							document.write("Herrenhaarschnitt (MIT Wäsche): " + pr_m2 + "<br\/>");
-							document.write("Damenaarschnitt (OHNE Wäsche): " + pr_f1 + "<br\/>");
-							document.write("Damenhaarschnitt (MIT Wäsche): " + pr_f2 + "<br\/>");
+							document.write("Herrenhaarschnitt (OHNE Wï¿½sche): " + pr_m1 + "<br\/>");
+							document.write("Herrenhaarschnitt (MIT Wï¿½sche): " + pr_m2 + "<br\/>");
+							document.write("Damenaarschnitt (OHNE Wï¿½sche): " + pr_f1 + "<br\/>");
+							document.write("Damenhaarschnitt (MIT Wï¿½sche): " + pr_f2 + "<br\/>");
 							document.write("Kinderhaarschnitt: " + pr_k + "<br\/>");
 							
 							break;
