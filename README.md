@@ -14,13 +14,12 @@ This project was voted as the best project by the participants and teachers. The
 
 ### Contributors
 
-##### ![alt GitHub](http://i.imgur.com/0o48UoR.png") [Marius Runde](https://github.com/mrunde)
-##### ![alt GitHub](http://i.imgur.com/0o48UoR.png") [Nicholas Schiestel](https://github.com/nicho90)
-##### ![alt GitHub](http://i.imgur.com/0o48UoR.png") [Heinrich Löwen](https://github.com/heinrichloewen)
-##### Theresa Franz
-##### Sarah Mersch
+:octocat: [Marius Runde](https://github.com/mrunde)<br>
+:octocat: [Nicholas Schiestel](https://github.com/nicho90)<br>
+:octocat: [Heinrich Löwen](https://github.com/heinrichloewen)<br>
+:bust_in_silhouette: Theresa Franz<br>
+:bust_in_silhouette: Sarah Mersch<br>
 
-***
 
 ### The MIT License (MIT)
 
